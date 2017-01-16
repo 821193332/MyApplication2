@@ -153,6 +153,13 @@ public class RecyclerViewFragment extends BaseFragment {
                 CacheUtils.putString(mContext,Constants.NET_AUDIO_URL,result);
                 LogUtil.e("onSuccess==" + result);
                 processData(result);
+                if(!isLoadMore){
+                    //完成刷新
+                    refreshLayout.finishRefresh();
+                }else{
+                    //把上拉的隐藏
+                    refreshLayout.finishRefreshLoadMore();
+                }
             }
 
             @Override
