@@ -1,26 +1,34 @@
 package mobile.myapplication.fragment;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
 import com.google.gson.Gson;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mobile.myapplication.R;
 import mobile.myapplication.abapter.RecyclerViewAdpater;
+import mobile.myapplication.activity.ShowImageAndGifActivity;
 import mobile.myapplication.base.BaseFragment;
+import mobile.myapplication.bean.MediaItem;
 import mobile.myapplication.bean.NetAudioBean;
 import mobile.myapplication.utils.CacheUtils;
 import mobile.myapplication.utils.Constants;
@@ -29,7 +37,7 @@ import mobile.myapplication.utils.LogUtil;
 
 public class RecyclerViewFragment extends BaseFragment {
 
-
+    private MaterialRefreshLayout refreshLayout;
     private static final String TAG = RecyclerViewFragment.class.getSimpleName();
     @Bind(R.id.recyclerview)
     RecyclerView recyclerview;
@@ -39,6 +47,7 @@ public class RecyclerViewFragment extends BaseFragment {
     TextView tvNomedia;
     private RecyclerViewAdpater myAdapter;
     private List<NetAudioBean.ListBean> datas;
+    private ArrayList<MediaItem> mediaItems;
 
     @Override
     public View initView() {
@@ -71,11 +80,55 @@ public class RecyclerViewFragment extends BaseFragment {
 //
 //            }
 //        });
+        //监听下拉和上拉刷新
+        refreshLayout.setMaterialRefreshListener(new MyMaterialRefreshListener());
 
         return view;
     }
+    private boolean isLoadMore = false;
 
-    @Override
+    class MyMaterialRefreshListener extends MaterialRefreshListener {
+
+        @Override
+        public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+//            Toast.makeText(mContext, "下拉刷新", Toast.LENGTH_SHORT).show();
+            isLoadMore = false;
+            getDataFromNet();
+        }
+        /**
+         * 加载更多的回调
+         * @param materialRefreshLayout
+         */
+        @Override
+        public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
+            super.onRefreshLoadMore(materialRefreshLayout);
+            isLoadMore = true;
+//            Toast.makeText(mContext, "加载更多", Toast.LENGTH_SHORT).show();
+            getDataFromNet();
+        }
+    }
+
+    class MyOnItemClickListener implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent,View view, int position, long id) {
+            //传递列表数据
+            Intent intent = new Intent(mContext,ShowImageAndGifActivity.class);
+
+            Bundle bundle = new Bundle();
+            //列表数据
+            bundle.putSerializable("videolist",mediaItems);
+            intent.putExtras(bundle);
+            //传递点击的位置
+            intent.putExtra("position",position);
+            startActivity(intent);
+
+        }
+    }
+
+
+
+        @Override
     public void initData() {
         super.initData();
         Log.e("TAG", "网络视频数据初始化了...");
