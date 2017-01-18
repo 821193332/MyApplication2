@@ -36,8 +36,10 @@ import mobile.myapplication.utils.LogUtil;
 
 
 public class RecyclerViewFragment extends BaseFragment {
+    @Bind(R.id.refresh)
+    MaterialRefreshLayout refreshLayout;
 
-    private MaterialRefreshLayout refreshLayout;
+
     private static final String TAG = RecyclerViewFragment.class.getSimpleName();
     @Bind(R.id.recyclerview)
     RecyclerView recyclerview;
@@ -45,6 +47,7 @@ public class RecyclerViewFragment extends BaseFragment {
     ProgressBar progressbar;
     @Bind(R.id.tv_nomedia)
     TextView tvNomedia;
+
     private RecyclerViewAdpater myAdapter;
     private List<NetAudioBean.ListBean> datas;
     private ArrayList<MediaItem> mediaItems;
@@ -54,7 +57,7 @@ public class RecyclerViewFragment extends BaseFragment {
         Log.e(TAG, "网络音频UI被初始化了");
         View view = View.inflate(mContext, R.layout.fragment_recyclerview, null);
         ButterKnife.bind(this, view);
-
+//        x.view().inject(RecyclerViewFragment.this,view);
         //设置点击事件
         //设置点击事件
 //        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,6 +83,7 @@ public class RecyclerViewFragment extends BaseFragment {
 //
 //            }
 //        });
+
         //监听下拉和上拉刷新
         refreshLayout.setMaterialRefreshListener(new MyMaterialRefreshListener());
 
